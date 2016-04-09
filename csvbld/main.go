@@ -37,16 +37,17 @@ func html2csv(fname string) {
 }
 
 func loadProfile(url string) {
-	randfname := fmt.Sprintf("%d.html", time.Now().UnixNano())
+	randfname := fmt.Sprintf("%d", time.Now().UnixNano())
+	htmlfname := randfname + ".html"
 	resp, err := http.Get(url)
 	rlib.Errcheck(err)
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	rlib.Errcheck(err)
-	err = ioutil.WriteFile(randfname, body, 0666)
+	err = ioutil.WriteFile(htmlfname, body, 0666)
 	rlib.Errcheck(err)
-	html2csv(randfname)
-	rlib.Errcheck(os.Remove(randfname))
+	html2csv(htmlfname)
+	rlib.Errcheck(os.Remove(htmlfname))
 }
 
 //-----------------------------------------------------------------------------------
