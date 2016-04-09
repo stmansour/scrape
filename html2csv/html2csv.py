@@ -112,12 +112,12 @@ if __name__ == "__main__":
     if len(args) == 0:
         print usage(sys.argv[0])  # print help information and exit:
         sys.exit(2)       
-    print programname
+    '''print programname'''
     html_files = glob.glob(args[0])
     for htmlfilename in html_files:
         outputfilename = os.path.splitext(htmlfilename)[0]+'.csv'
         parser = html2csv()
-        print 'Reading %s, writing %s...' % (htmlfilename, outputfilename)
+        '''print 'Reading %s, writing %s...' % (htmlfilename, outputfilename)'''
         try:
             htmlfile = open(htmlfilename, 'rb')
             csvfile = open( outputfilename, 'w+b')
@@ -136,4 +136,4 @@ if __name__ == "__main__":
             except: pass
             try:    csvfile.close()
             except: pass
-    print 'All done.                                      '
+    '''print 'All done.'   '''

@@ -16,6 +16,7 @@ type theApp struct {
 	debug bool
 }
 
+// App is the struct that holds all application related attributes
 var App theApp
 
 func errcheck(err error) {

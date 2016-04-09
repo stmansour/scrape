@@ -1,13 +1,9 @@
-form: *.go
-	go vet
-	golint
-	go build
+profile: profile.sh
 	@echo "build complete in form"
 
 clean:
-	rm -f form
 	@echo "clean complete in form"
 
 install:
-	cp ./form ../bin/
+	cp profile.sh ../bin/
 	@echo "install complete in form"

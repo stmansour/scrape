@@ -1,7 +1,13 @@
-all: clean csvbld
+csvbld: *.go
+	go vet
+	golint
+	go build
+	@echo "build complete in csvbld"
 
 clean:
 	rm -f csvbld
+	@echo "clean complete in csvbld"
 
-csvbld: *.go
-	go build
+install:
+	cp csvbld ../bin/
+	@echo "install complete in csvbld"

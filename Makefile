@@ -1,10 +1,13 @@
-all: scrape
+DIRS = form html2csv csvbld profile
+
+scrape:
+	for dir in $(DIRS); do make -C $$dir;done
 
 clean:
-	cd csvbld;make clean
-	cd form;make clean
-	cd splitName;make clean
-	rm -f scrape
+	for dir in $(DIRS); do make -C $$dir clean;done
 
-scrape: *.go
-	go build
+install:
+	if [ -d ./bin ]; then rm -rf ./bin; fi
+	mkdir ./bin
+	for dir in $(DIRS); do make -C $$dir install;done
+
