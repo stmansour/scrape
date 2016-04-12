@@ -13,7 +13,7 @@ mkdir -p workspace/step2
 #           Using a single thread, this step takes about 40 min
 #----------------------------------------------------
 pushd workspace/step1
-# ../../bin/form
+../../bin/form
 STEP1=$(date)
 
 #--------------------------------------------------------
