@@ -284,8 +284,7 @@ func loadProfile(url string, firstName, lastName string) {
 		if p.FID == 0 && len(first) > 0 && len(last) > 0 {
 			p = GetPersonByName(first, middle, last)
 			if p.FID == 0 {
-				fmt.Printf("Could not find person named:  %s %s %s\n", firstName, middleName, lastName)
-				os.Exit(2)
+				fmt.Printf("INFO: Could not find person named:  %s %s %s\n", firstName, middleName, lastName)
 				return
 			}
 		}

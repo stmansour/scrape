@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"compress/gzip"
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,10 +11,14 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"sync"
+	"time"
 )
 
 type theApp struct {
-	debug bool
+	debug   bool
+	c       chan string
+	workers int // number of workers in the goroutine worker pool
 }
 
 // App is the struct that holds all application related attributes
@@ -85,17 +90,51 @@ func getFile(q string) {
 	f.Sync()
 }
 
-func getAllFiles() {
-	for i := 'a'; i <= 'z'; i++ {
-		for j := 'a'; j < 'z'; j++ {
-			q := fmt.Sprintf("%c%c", i, j)
-			fmt.Printf("%s\n", q)
-			getFile(q)
-		}
+// worker waits for a work item (string s) to come to it via the
+// channel string. When it gets one, it calls processLoadPerson to
+// handle that string. It will continue doing this as long as more
+// work is available via channel n.  Once n is closed, it will exit
+// which invokes the deferred work group exit.
+func worker(n chan string, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for s := range n {
+		fmt.Printf("start(%s)\n", s)
+		getFile(s)
+		fmt.Printf("finish(%s)\n", s)
 	}
 }
 
+func readCommandLineArgs() {
+	dbgPtr := flag.Bool("D", false, "use this option to turn on debug mode")
+	wpPtr := flag.Int("w", 25, "Number of workers in the worker pool")
+	flag.Parse()
+	App.debug = *dbgPtr
+	App.workers = *wpPtr
+}
+
 func main() {
-	App.debug = false
-	getAllFiles()
+	start := time.Now()
+	readCommandLineArgs()
+
+	//------------------------------------------
+	// Create a pool of worker goroutines...
+	//------------------------------------------
+	App.c = make(chan string)
+	wg := new(sync.WaitGroup)
+	for i := 0; i < App.workers; i++ {
+		wg.Add(1)
+		go worker(App.c, wg)
+	}
+
+	for i := 'a'; i <= 'z'; i++ {
+		for j := 'a'; j < 'z'; j++ {
+			q := fmt.Sprintf("%c%c", i, j)
+			App.c <- q
+		}
+	}
+
+	// now just wait for the workers to finish everything...
+	wg.Wait()
+	elapsed := time.Since(start)
+	fmt.Printf("Elapsed time: %s\n", elapsed)
 }

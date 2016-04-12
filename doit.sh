@@ -1,6 +1,6 @@
 #!/bin/bash
 STARTTIME=$(date)
- 
+MYSQL=$(sh -c "which mysql")
 #----------------------------------------------------
 #  Start with a clean workspace
 #----------------------------------------------------
@@ -40,7 +40,7 @@ STEP2=$(date)
 cd ../step2
 cat *.csv | grep -v "close window" | grep -v \"Vacant\" | egrep -v "^\" \"$" | egrep -v '^"[^"]*","[^"]*","[^"]*","[^"]*"$' | egrep -v '^"[^"]*","[^"]*"$' | egrep -v '^$' | egrep -v '"Travel,' | egrep -v '"Test,'  > ../step3.csv
 cd ../
-/usr/local/bin/mysql --no-defaults < ../bin/schema.sql
+${MYSQL} --no-defaults < ../bin/schema.sql
 ../bin/loadnames -f step3.csv
 STEP3=$(date)
 
