@@ -5,9 +5,14 @@ csvbld: *.go
 	@echo "build complete in csvbld"
 
 clean:
-	rm -f csvbld
+	rm -f csvbld *.csv *.html 146*
 	@echo "clean complete in csvbld"
 
 install:
 	cp csvbld ../bin/
 	@echo "install complete in csvbld"
+
+
+test:
+	cp ../workspace/step4.csv .
+	./csvbld

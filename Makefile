@@ -1,4 +1,4 @@
-DIRS = form html2csv csvbld profile
+DIRS = form html2csv csvbld profile db loadnames
 
 scrape:
 	for dir in $(DIRS); do make -C $$dir;done

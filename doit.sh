@@ -1,17 +1,18 @@
 #!/bin/bash
 STARTTIME=$(date)
+ 
 #----------------------------------------------------
 #  Start with a clean workspace
 #----------------------------------------------------
 # rm -rf workspace
-# mkdir -p workspace/step1
-# mkdir -p workspace/step2
+mkdir -p workspace/step1
+mkdir -p workspace/step2
 
-# #----------------------------------------------------
-# #  Step 1 - Grab the basic list from the faa site
-# #           Using a single thread, this step takes about 40 min
-# #----------------------------------------------------
-# pushd workspace/step1
+#----------------------------------------------------
+#  Step 1 - Grab the basic list from the faa site
+#           Using a single thread, this step takes about 40 min
+#----------------------------------------------------
+pushd workspace/step1
 # ../../bin/form
 STEP1=$(date)
 
@@ -32,12 +33,15 @@ STEP2=$(date)
 #-----------------------------------------------------------------
 #  Step 3 - Filter out cruft and aggregate to a single csv file...
 #  When this step completes, step3.csv will have the basic directory
-#  information.  There are still further details that we can get
+#  information. This will be used to create the database. 
+#  There are still further details that we can get
 #  from the Profile on each person. We'll get this info in step 4.
 #-----------------------------------------------------------------
 cd ../step2
 cat *.csv | grep -v "close window" | grep -v \"Vacant\" | egrep -v "^\" \"$" | egrep -v '^"[^"]*","[^"]*","[^"]*","[^"]*"$' | egrep -v '^"[^"]*","[^"]*"$' | egrep -v '^$' | egrep -v '"Travel,' | egrep -v '"Test,'  > ../step3.csv
 cd ../
+/usr/local/bin/mysql --no-defaults < ../bin/schema.sql
+../bin/loadnames -f step3.csv
 STEP3=$(date)
 
 #-----------------------------------------------------------------

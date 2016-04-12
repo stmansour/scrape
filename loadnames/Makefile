@@ -11,3 +11,6 @@ clean:
 install:
 	cp loadnames ../bin/
 	@echo "install complete in loadnames"
+
+db:
+	pushd ../db; make ; popd

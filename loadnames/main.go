@@ -16,17 +16,29 @@ import (
 import _ "github.com/go-sql-driver/mysql"
 
 // Person is a structure of all attributes of the FAA employees we're capturing
+// Person is the structure that defines all the attributes of a person
 type Person struct {
-	FID         int64
-	FirstName   string
-	LastName    string
-	MiddleName  string
-	JobTitle    string
-	OfficePhone string
-	MailAddress string
-	RoomNumber  string
-	MailStop    string
-	Email1      string
+	FID            int64
+	FirstName      string
+	LastName       string
+	MiddleName     string
+	JobTitle       string
+	OfficePhone    string
+	OfficeFax      string
+	Email1         string
+	MailAddress    string
+	MailAddress2   string
+	MailCity       string
+	MailState      string
+	MailPostalCode string
+	MailCountry    string
+	RoomNumber     string
+	MailStop       string
+}
+
+// collection of prepared sql statements
+type prepSQL struct {
+	insertPerson *sql.Stmt
 }
 
 // App is the global data structure for this app
@@ -36,6 +48,7 @@ var App struct {
 	DBUser    string
 	fname     string
 	startName string
+	prepstmt  prepSQL
 }
 
 // Errcheck - saves a bunch of typing, prints error if it exists
@@ -48,6 +61,29 @@ func Errcheck(err error) {
 	}
 }
 
+// InsertPerson writes a new Person record to the database
+func InsertPerson(p *Person) error {
+	_, err := App.prepstmt.insertPerson.Exec(
+		p.FirstName, p.LastName, p.MiddleName, p.JobTitle, p.OfficePhone, p.OfficeFax, p.Email1, p.MailAddress, p.MailAddress2, p.MailCity, p.MailState, p.MailPostalCode, p.MailCountry, p.RoomNumber, p.MailStop)
+	if nil != err {
+		fmt.Printf("error inserting person: %v\n", err)
+	}
+	return err
+}
+
+func stripchars(str, chr string) string {
+	return strings.Map(func(r rune) rune {
+		if strings.IndexRune(chr, r) < 0 {
+			return r
+		}
+		return -1
+	}, str)
+}
+
+func scrubEmailAddr(s string) string {
+	return stripchars(s, " ,'\"():;<>")
+}
+
 // emailBuilder generates an email address based on the apparent
 // default formula that the FAA uses for their email addresses.
 // That is:
@@ -56,9 +92,9 @@ func Errcheck(err error) {
 //		[firstName].[middleInitial].[lastName]@FAA.gov
 func emailBuilder(p *Person) {
 	if len(p.MiddleName) > 0 {
-		p.Email1 = fmt.Sprintf("%s.%c.%s@faa.gov", p.FirstName, p.MiddleName[0], p.LastName)
+		p.Email1 = scrubEmailAddr(fmt.Sprintf("%s.%s.%s@faa.gov", p.FirstName, p.MiddleName, p.LastName))
 	} else if len(p.FirstName) > 0 {
-		p.Email1 = fmt.Sprintf("%s.%s@faa.gov", p.FirstName, p.LastName)
+		p.Email1 = scrubEmailAddr(fmt.Sprintf("%s.%s@faa.gov", p.FirstName, p.LastName))
 	}
 }
 
@@ -119,8 +155,14 @@ func loadnames(fname string) {
 		p.OfficePhone = sa[2]
 		nameHandler(sa[0], &p)
 		emailBuilder(&p)
-		fmt.Printf("p = %#v\n", p)
+		InsertPerson(&p)
 	}
+}
+
+func buildPreparedStatements() {
+	var err error
+	App.prepstmt.insertPerson, err = App.db.Prepare("INSERT INTO people (FirstName,LastName,MiddleName,JobTitle,OfficePhone,OfficeFax,Email1,MailAddress,MailAddress2,MailCity,MailState,MailPostalCode,MailCountry,RoomNumber,MailStop) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+	Errcheck(err)
 }
 
 func readCommandLineArgs() {
@@ -151,6 +193,6 @@ func main() {
 		fmt.Printf("App.db.Ping for database=%s, dbuser=%s: Error = %v\n", App.DBName, App.DBUser, err)
 		os.Exit(1)
 	}
-
+	buildPreparedStatements()
 	loadnames(App.fname)
 }

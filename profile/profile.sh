@@ -18,7 +18,7 @@ do
 	do
 		fbase="${x}${y}"
 		if [ -f step1/${fbase}.html ]; then
-			echo "Phase 2:  ${fbase}"
+			echo "Profiles for:  ${fbase}"
 			cat step1/${fbase}.html | tail -n +36 |sed -n -e :a -e '1,3!{P;N;D;};N;ba'| sed -e '/<[\/]*table>/d'| sed -e '/page-break-before:always/d' > x
 			for f in "${link_filters[@]}"
 			do

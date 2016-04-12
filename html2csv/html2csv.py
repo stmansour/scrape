@@ -125,7 +125,7 @@ if __name__ == "__main__":
             while data:
                 parser.feed( data )
                 csvfile.write( parser.getCSV() )
-                sys.stdout.write('%d CSV rows written.\r' % parser.rowCount)
+                '''sys.stdout.write('%d CSV rows written.\r' % parser.rowCount)'''
                 data = htmlfile.read(8192)
             csvfile.write( parser.getCSV(True) )
             csvfile.close()
