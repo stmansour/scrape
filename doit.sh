@@ -52,6 +52,10 @@ STEP3=$(date)
 ../bin/profile.sh
 STEP4=$(date)
 
+#-----------------------------------------------------------------
+#  Step 5 - Process every profile link
+#-----------------------------------------------------------------
+
 echo "Completed"
 echo "Started............: ${STARTTIME}"
 echo "Step 1 completed...: ${STEP1}"

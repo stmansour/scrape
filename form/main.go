@@ -132,6 +132,7 @@ func main() {
 			App.c <- q
 		}
 	}
+	close(App.c)
 
 	// now just wait for the workers to finish everything...
 	wg.Wait()
