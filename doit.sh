@@ -4,7 +4,7 @@ MYSQL=$(sh -c "which mysql")
 #----------------------------------------------------
 #  Start with a clean workspace
 #----------------------------------------------------
-# rm -rf workspace
+rm -rf workspace
 mkdir -p workspace/step1
 mkdir -p workspace/step2
 
