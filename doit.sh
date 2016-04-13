@@ -55,6 +55,8 @@ STEP4=$(date)
 #-----------------------------------------------------------------
 #  Step 5 - Process every profile link
 #-----------------------------------------------------------------
+../bin/csvbld -b ../bin
+STEP5=$(date)
 
 echo "Completed"
 echo "Started............: ${STARTTIME}"
@@ -62,3 +64,4 @@ echo "Step 1 completed...: ${STEP1}"
 echo "Step 2 completed...: ${STEP2}"
 echo "Step 3 completed...: ${STEP3}"
 echo "Step 4 completed...: ${STEP4}"
+echo "Step 5 completed...: ${STEP5}"

@@ -27,6 +27,7 @@ var App struct {
 	db        *sql.DB
 	DBName    string
 	DBUser    string
+	binpath   string
 	prepstmt  prepSQL
 	c         chan string
 	workers   int // number of workers in the goroutine worker pool
@@ -108,7 +109,8 @@ func DBUpdatePerson(p *Person) {
 }
 
 func html2csv(fname string) {
-	args := []string{"./html2csv.py", fname}
+	h := fmt.Sprintf("%s/html2csv.py", App.binpath)
+	args := []string{h, fname}
 	cmd := exec.Command("python", args...)
 	err := cmd.Start()
 	if err != nil {
@@ -405,6 +407,7 @@ func readCommandLineArgs() {
 	skipPtr := flag.String("s", "", "skip input lines until finding this name.")
 	dbuPtr := flag.String("B", "ec2-user", "database user name")
 	dbnmPtr := flag.String("N", "faa", "database name")
+	binPtr := flag.String("b", ".", "path to bin, from current directory")
 	dbgPtr := flag.Bool("D", false, "use this option to turn on debug mode")
 	wpPtr := flag.Int("w", 25, "Number of workers in the worker pool")
 	flag.Parse()
@@ -415,6 +418,7 @@ func readCommandLineArgs() {
 	App.DBUser = *dbuPtr
 	App.debug = *dbgPtr
 	App.workers = *wpPtr
+	App.binpath = *binPtr
 }
 
 func main() {
