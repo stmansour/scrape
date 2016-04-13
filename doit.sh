@@ -58,6 +58,22 @@ STEP4=$(date)
 ../bin/csvbld -b ../bin
 STEP5=$(date)
 
+#-----------------------------------------------------------------
+#  Step 6 - Export to csv
+#-----------------------------------------------------------------
+cat >xxyyzz <<EOF
+USE faa
+SET @TS = DATE_FORMAT(NOW(),'_%Y_%m_%d_%H_%i_%s');
+SET @FOLDER = '/tmp/';
+SET @PREFIX = 'faadir';
+SET @EXT    = '.csv';
+SET @CMD = CONCAT("SELECT * FROM people INTO OUTFILE '",@FOLDER,@PREFIX,@TS,@EXT,"' FIELDS ENCLOSED BY '\"' TERMINATED BY ',' ESCAPED BY '\"'","  LINES TERMINATED BY '\r\n';");
+PREPARE statement FROM @CMD;
+EXECUTE statement;
+EOF
+${MYSQL} < xxyyzz
+STEP6=$(date)
+
 echo "Completed"
 echo "Started............: ${STARTTIME}"
 echo "Step 1 completed...: ${STEP1}"
@@ -65,3 +81,5 @@ echo "Step 2 completed...: ${STEP2}"
 echo "Step 3 completed...: ${STEP3}"
 echo "Step 4 completed...: ${STEP4}"
 echo "Step 5 completed...: ${STEP5}"
+echo "Step 6 completed...: ${STEP6}"
+
