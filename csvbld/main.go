@@ -465,7 +465,15 @@ func main() {
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		s := scanner.Text() // grab a new line of work
-		App.c <- s          // hand it off to a worker
+		if App.skip {
+			if strings.Contains(s, App.startName) {
+				fmt.Printf("Found %s.  Processing begins...\n", App.startName)
+				App.skip = false
+			} else {
+				continue
+			}
+		}
+		App.c <- s // hand it off to a worker
 	}
 	rlib.Errcheck(scanner.Err())
 	close(App.c)

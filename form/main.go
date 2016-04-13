@@ -127,7 +127,7 @@ func main() {
 	}
 
 	for i := 'a'; i <= 'z'; i++ {
-		for j := 'a'; j < 'z'; j++ {
+		for j := 'a'; j <= 'z'; j++ {
 			q := fmt.Sprintf("%c%c", i, j)
 			App.c <- q
 		}
