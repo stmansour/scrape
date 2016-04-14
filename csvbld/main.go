@@ -147,7 +147,7 @@ func stripchars(str, chr string) string {
 }
 
 func scrubEmailAddr(s string) string {
-	return stripchars(s, " ,'\"():;<>")
+	return stripchars(s, " ,\"():;<>")
 }
 
 // emailBuilder generates an email address based on the apparent
@@ -162,6 +162,7 @@ func emailBuilder(p *Person) {
 	} else if len(p.FirstName) > 0 {
 		p.Email1 = scrubEmailAddr(fmt.Sprintf("%s.%s@faa.gov", p.FirstName, p.LastName))
 	}
+	fmt.Printf("set email address to: %s\n", p.Email1)
 }
 
 func badAddress(s string, p *Person) {

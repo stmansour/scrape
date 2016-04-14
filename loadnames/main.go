@@ -81,7 +81,7 @@ func stripchars(str, chr string) string {
 }
 
 func scrubEmailAddr(s string) string {
-	return stripchars(s, " ,'\"():;<>")
+	return stripchars(s, " ,\"():;<>")
 }
 
 // emailBuilder generates an email address based on the apparent
