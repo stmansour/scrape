@@ -63,15 +63,15 @@ STEP5=$(date)
 #-----------------------------------------------------------------
 cat >xxyyzz <<EOF
 USE faa
-SET @TS = DATE_FORMAT(NOW(),'_%Y_%m_%d_%H_%i_%s');
-SET @FOLDER = '/tmp/';
-SET @PREFIX = 'faadir';
-SET @EXT    = '.csv';
-SET @CMD = CONCAT("SELECT * FROM people INTO OUTFILE '",@FOLDER,@PREFIX,@TS,@EXT,"' FIELDS ENCLOSED BY '\"' TERMINATED BY ',' ESCAPED BY '\"'","  LINES TERMINATED BY '\r\n';");
-PREPARE statement FROM @CMD;
-EXECUTE statement;
+describe people;
 EOF
-${MYSQL} < xxyyzz
+${MYSQL} --no-defaults <xxyyzz >x
+rm -f xxyyzz
+cat x | sed 1,2d | awk '{printf "%s,", $1} END {printf "\n"}' | sed 's/,$//' > head.csv
+
+${MYSQLDUMP} --no-defaults -t -T./tmp faa --fields-enclosed-by=\" --fields-terminated-by=,
+cat head.csv /tmp/faadir.csv >faadir.csv
+
 STEP6=$(date)
 
 echo "Completed"

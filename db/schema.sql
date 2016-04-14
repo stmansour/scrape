@@ -5,7 +5,8 @@ CREATE DATABASE faa;
 USE faa;
 GRANT ALL PRIVILEGES ON faa TO 'ec2-user'@'localhost';
 GRANT ALL PRIVILEGES ON faa.* TO 'ec2-user'@'localhost';
-
+GRANT ALL PRIVILEGES ON faa TO 'adbuser'@'localhost';
+GRANT ALL PRIVILEGES ON faa.* TO 'adbuser'@'localhost';
 
 -- **************************************
 -- ****                              ****
