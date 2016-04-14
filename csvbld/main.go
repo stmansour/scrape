@@ -358,26 +358,11 @@ func processLoadPerson(s string) {
 	}
 
 	//-------------------------------------------------
-	// Since the list is large (>50,000 people) we may
-	// encounter errors that break the program. If so,
-	// we may want to restart at a particular name rather
-	// than starting from scratch each time.
-	//-------------------------------------------------
-	if App.skip {
-		if App.startName == lastName {
-			fmt.Printf("found %s, will begin processing now\n", lastName)
-			App.skip = false
-		} else {
-			return
-		}
-	}
-
-	//-------------------------------------------------
 	// Get the info and update...
 	//-------------------------------------------------
-	fmt.Printf("starting(%s)\n", url)
+	fmt.Printf("start: %s %s\n", firstName, lastName)
 	loadProfile(url, firstName, lastName)
-	fmt.Printf("finished(%s)\n", s)
+	fmt.Printf("done: %s %s\n", firstName, lastName)
 }
 
 // worker waits for a work item (string s) to come to it via the

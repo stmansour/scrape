@@ -98,9 +98,7 @@ func getFile(q string) {
 func worker(n chan string, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for s := range n {
-		fmt.Printf("start(%s)\n", s)
 		getFile(s)
-		fmt.Printf("finish(%s)\n", s)
 	}
 }
 
@@ -127,6 +125,7 @@ func main() {
 	}
 
 	for i := 'a'; i <= 'z'; i++ {
+		fmt.Printf("Searching %c*\n", i)
 		for j := 'a'; j <= 'z'; j++ {
 			q := fmt.Sprintf("%c%c", i, j)
 			App.c <- q
