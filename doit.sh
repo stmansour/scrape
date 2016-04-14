@@ -1,6 +1,37 @@
 #!/bin/bash
 STARTTIME=$(date)
 MYSQL=$(sh -c "which mysql")
+MYSQLDUMP=$(sh -c "which mysqldump")
+QUICK=0
+
+usage() {
+    cat <<ZZEOF
+Usage: $0 options...
+Optons:
+    -q           quick mode. Go only once through every loop.
+
+Description:     Generate a new FAA directory in the database and create 
+                 a csv file that can be imported into Excel.
+
+ZZEOF
+    exit 1
+}
+
+while getopts ":q" o; do
+    case "${o}" in
+        q)
+            QUICK=1
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+
+if [ ${QUICK} -gt 0 ]; then
+	QUICKOPT="-q"
+fi
+
 #----------------------------------------------------
 #  Start with a clean workspace
 #----------------------------------------------------
@@ -13,7 +44,7 @@ mkdir -p workspace/step2
 #           Using a single thread, this step takes about 40 min
 #----------------------------------------------------
 pushd workspace/step1
-../../bin/form -w 50
+../../bin/form -w 50 ${QUICKOPT}
 STEP1=$(date)
 
 #--------------------------------------------------------
@@ -25,7 +56,9 @@ do
 	do
 		echo "Phase 1: $x$y"
 		python ../../bin/html2csv.py ${x}${y}.html
+		if [ ${QUICK} -gt 0 ]; then break; fi
 	done
+	if [ ${QUICK} -gt 0 ]; then break; fi
 done
 mv *.csv ../step2/
 STEP2=$(date)
@@ -49,13 +82,13 @@ STEP3=$(date)
 #           each person.  Call the profile link, pull down the html
 #           parse out the useful data and update the db 
 #-----------------------------------------------------------------
-../bin/profile.sh
+../bin/profile.sh ${QUICKOPT}
 STEP4=$(date)
 
 #-----------------------------------------------------------------
 #  Step 5 - Process every profile link
 #-----------------------------------------------------------------
-../bin/csvbld -b ../bin -w 50
+../bin/csvbld -b ../bin -w 50 ${QUICKOPT}
 STEP5=$(date)
 
 #-----------------------------------------------------------------
@@ -69,8 +102,12 @@ ${MYSQL} --no-defaults <xxyyzz >x
 rm -f xxyyzz
 cat x | sed 1,2d | awk '{printf "%s,", $1} END {printf "\n"}' | sed 's/,$//' > head.csv
 
+rm -rf tmp
+mkdir tmp
+chmod 777 tmp
+
 ${MYSQLDUMP} --no-defaults -t -T./tmp faa --fields-enclosed-by=\" --fields-terminated-by=,
-cat head.csv /tmp/faadir.csv >faadir.csv
+cat head.csv ./tmp/people.txt >faadir.csv
 
 STEP6=$(date)
 

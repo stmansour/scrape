@@ -32,6 +32,7 @@ var App struct {
 	c         chan string
 	workers   int // number of workers in the goroutine worker pool
 	debug     bool
+	quick     bool // only go through one loop
 }
 
 // Person is the structure that defines all the attributes of a person
@@ -396,6 +397,7 @@ func readCommandLineArgs() {
 	binPtr := flag.String("b", ".", "path to bin, from current directory")
 	dbgPtr := flag.Bool("D", false, "use this option to turn on debug mode")
 	wpPtr := flag.Int("w", 25, "Number of workers in the worker pool")
+	qPtr := flag.Bool("q", false, "quick option")
 	flag.Parse()
 	App.htmldir = *dirPtr
 	App.fname = *fPtr
@@ -405,6 +407,7 @@ func readCommandLineArgs() {
 	App.debug = *dbgPtr
 	App.workers = *wpPtr
 	App.binpath = *binPtr
+	App.quick = *qPtr
 }
 
 func main() {

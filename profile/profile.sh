@@ -1,6 +1,30 @@
 #!/bin/bash
 # This script processes the html pages from step1 into a list of 
 # URLs that can be called to get detail info on each person.
+QUICK=0
+
+usage() {
+    cat <<ZZEOF
+Usage: $0 options...
+Optons:
+    -q           quick mode. Go only once through every loop.
+
+Description:     Build a csv file with all the profiles to load.
+
+ZZEOF
+    exit 1
+}
+
+while getopts ":q" o; do
+    case "${o}" in
+        q)
+            QUICK=1
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
 
 declare -a link_filters=(
 	's/^.{80}//'
@@ -26,6 +50,8 @@ do
 			done
 			cat x |grep "(LoadPerson)" >> step4.csv
 		fi
+		if [ ${QUICK} -gt 0 ]; then break; fi
 	done
+	if [ ${QUICK} -gt 0 ]; then break; fi
 done
 

@@ -19,6 +19,7 @@ type theApp struct {
 	debug   bool
 	c       chan string
 	workers int // number of workers in the goroutine worker pool
+	quick   bool
 }
 
 // App is the struct that holds all application related attributes
@@ -104,10 +105,12 @@ func worker(n chan string, wg *sync.WaitGroup) {
 
 func readCommandLineArgs() {
 	dbgPtr := flag.Bool("D", false, "use this option to turn on debug mode")
+	qPtr := flag.Bool("q", false, "quick mode - only loop once - enables fast start to finish testing")
 	wpPtr := flag.Int("w", 25, "Number of workers in the worker pool")
 	flag.Parse()
 	App.debug = *dbgPtr
 	App.workers = *wpPtr
+	App.quick = *qPtr
 }
 
 func main() {
@@ -129,6 +132,12 @@ func main() {
 		for j := 'a'; j <= 'z'; j++ {
 			q := fmt.Sprintf("%c%c", i, j)
 			App.c <- q
+			if App.quick {
+				break
+			}
+		}
+		if App.quick {
+			break
 		}
 	}
 	close(App.c)
