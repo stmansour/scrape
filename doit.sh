@@ -3,12 +3,14 @@ STARTTIME=$(date)
 MYSQL=$(sh -c "which mysql")
 MYSQLDUMP=$(sh -c "which mysqldump")
 QUICK=0
+WORKERS=50
 
 usage() {
     cat <<ZZEOF
 Usage: $0 options...
 Optons:
     -q           quick mode. Go only once through every loop.
+    -w           number of worker routines. Default = ${WORKERS}
 
 Description:     Generate a new FAA directory in the database and create 
                  a csv file that can be imported into Excel.
@@ -17,10 +19,13 @@ ZZEOF
     exit 1
 }
 
-while getopts ":q" o; do
+while getopts ":qw:" o; do
     case "${o}" in
         q)
             QUICK=1
+            ;;
+        w)
+            WORKERS=${OPTARG}
             ;;
         *)
             usage
@@ -44,7 +49,7 @@ mkdir -p workspace/step2
 #           Using a single thread, this step takes about 40 min
 #----------------------------------------------------
 pushd workspace/step1
-../../bin/form -w 50 ${QUICKOPT}
+../../bin/form -w ${WORKERS} ${QUICKOPT}
 STEP1=$(date)
 
 #--------------------------------------------------------
@@ -88,7 +93,7 @@ STEP4=$(date)
 #-----------------------------------------------------------------
 #  Step 5 - Process every profile link
 #-----------------------------------------------------------------
-../bin/csvbld -b ../bin -w 50 ${QUICKOPT}
+../bin/csvbld -b ../bin -w ${WORKERS} ${QUICKOPT}
 STEP5=$(date)
 
 #-----------------------------------------------------------------

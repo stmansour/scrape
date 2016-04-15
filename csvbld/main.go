@@ -278,6 +278,7 @@ func loadProfile(url string, firstName, lastName string) {
 				last = na[2]
 			default:
 				fmt.Printf("unrecognized name format: %#v\n", na)
+				rlib.Errcheck(os.Remove(randfname + ".csv"))
 				return
 			}
 		}
@@ -289,6 +290,7 @@ func loadProfile(url string, firstName, lastName string) {
 			p = GetPersonByName(first, middle, last)
 			if p.FID == 0 {
 				fmt.Printf("INFO: Could not find person named:  %s %s %s\n", firstName, middleName, lastName)
+				rlib.Errcheck(os.Remove(randfname + ".csv"))
 				return
 			}
 		}
