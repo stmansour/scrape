@@ -253,7 +253,7 @@ func loadProfile(url string, firstName, lastName string) {
 	defer resp.Body.Close()
 	var body []byte
 	for i := 0; i < 3; i++ {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err = ioutil.ReadAll(resp.Body)
 		if nil == err {
 			break
 		}
