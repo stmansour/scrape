@@ -233,11 +233,38 @@ func debugDumpProfileCSV(tp *[][]string) {
 func loadProfile(url string, firstName, lastName string) {
 	randfname := fmt.Sprintf("%d", time.Now().UnixNano())
 	htmlfname := randfname + ".html"
-	resp, err := http.Get(url)
-	rlib.Errcheck(err)
+
+	// let's do retries here... 3 tries.  Wait 5 seconds between each try...
+	var err error
+	var resp *http.Response
+	for i := 0; i < 3; i++ {
+		resp, err = http.Get(url)
+		if nil == err {
+			break
+		}
+		time.Sleep(5 * time.Second)
+	}
+	if err != nil {
+		fmt.Printf("http.Get(%s) failed 3 times\n", url)
+		fmt.Printf("\terr = %v\n", err)
+		return // let's let the program keep running
+	}
+
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	rlib.Errcheck(err)
+	var body []byte
+	for i := 0; i < 3; i++ {
+		body, err := ioutil.ReadAll(resp.Body)
+		if nil == err {
+			break
+		}
+		time.Sleep(5 * time.Second)
+	}
+	if err != nil {
+		fmt.Printf("loadProfile: ioutil.ReadAll failed 3 times\n")
+		fmt.Printf("\terr = %v\n", err)
+		return // let's let the program keep running
+	}
+
 	err = ioutil.WriteFile(htmlfname, body, 0666)
 	rlib.Errcheck(err)
 	html2csv(htmlfname)
