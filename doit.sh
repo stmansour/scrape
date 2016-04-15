@@ -117,6 +117,7 @@ cat head.csv ./tmp/people.txt >faadir.csv
 STEP6=$(date)
 
 echo "Completed"
+echo "Number of workers..: ${WORKERS}"
 echo "Started............: ${STARTTIME}"
 echo "Step 1 completed...: ${STEP1}"
 echo "Step 2 completed...: ${STEP2}"
